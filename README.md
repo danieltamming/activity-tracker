@@ -1,7 +1,9 @@
 # activity-tracker
 
 ### How It Works On My Machine (and Will It Work On Yours?)
-When Firefox is running it stores the current session's information a lz4 compressed json file. This program relies entirely on its ability to process the data contained in this file. The program's filename was written with regex matching to take into account the fact the filepath can vary slightly between machines. If the regex matching is unsuccessful you'll receive a 'Firefox file not found' AssertionError, and you'll have to enter your filename in the Tracker class `__init__` method yourself. 
+When Firefox is running it stores the current session's information a lz4 compressed json file. The program contained in this repo relies entirely on the data contained in this file. In the program, the Firefox filepath was written with regex matching (shown below) to take into account the fact that the filepath can vary slightly between machines. If the regex matching is unsuccessful you'll receive a 'Firefox file not found' AssertionError, and you'll have to find the filepath and enter it in the Tracker class `__init__` method yourself. To find the filepath, look through your files while keeping in mind that it should approximately match the regex pattern. If you can't find the filepath, this likely means you have an earlier version of Firefox that is not compatible with this program. 
+
+Filepath **regex**: '~/.mozilla/firefox/\*default/''sessionstore-backups/recovery.json\*'
 
 So far I've only run this on my laptop. I have a 64-bit Ubuntu 18.04 and Firefox 70.0.
 
