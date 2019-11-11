@@ -29,7 +29,7 @@ When Firefox is running it stores the current session's information a lz4 compre
 
 If the regex matching is unsuccessful you'll receive a 'Firefox file not found' AssertionError, and you'll have to find the filepath and enter it in the Tracker class `__init__` method yourself. To find the filepath, look through your files while keeping in mind that it should approximately match the regex pattern. If you can't find the filepath, this likely means you have an earlier version of Firefox that is not compatible with this program. 
 
-Filepath **regex**: '~/.mozilla/firefox/\*default/''sessionstore-backups/recovery.json\*'
+**Filepath regex**: '~/.mozilla/firefox/\*default/''sessionstore-backups/recovery.json\*'
 
 So far I've only run this on my laptop. I have a 64-bit Ubuntu 18.04 and Firefox 70.0.
 
@@ -37,4 +37,5 @@ So far I've only run this on my laptop. I have a 64-bit Ubuntu 18.04 and Firefox
 Firefox writes to the json file with a delay of up to 5 seconds, so this function may miss tabs that were opened and closed within that time span. 
 
 ### TODO
-Introduce a concurrent active window tracking function. 
+  * Introduce a concurrent active window tracking function. 
+  * Create more detailed reports. 
