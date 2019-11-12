@@ -1,11 +1,21 @@
 # activity-tracker
 
-### How To Run
-1. Clone the repository and create a virtual environment with all the packages in requirements.txt installed.
-2. `python tracker.py` to begin your daily tracking session.
-3. Work!
-4. <kbd>Ctrl</kbd>+<kbd>C</kbd> to safely end the day's tracking session. 
-5. `python report.py` to display the information from that session. 
+### To Install
+```
+git clone https://github.com/danitamm/activity-tracker.git
+cd activity-tracker
+virtualenv -p python3 env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+### To Use
+1. `python tracker.py` to begin tracking session
+
+2. Work!
+
+3. <kbd>Ctrl</kbd>+<kbd>C</kbd> while Terminal is selected to end tracking session
+4. `python report.py` to see the data
 
 ### Data Report
 The data storage was designed to be used in a wide variety of ways. Currently, it shows a pie chart representing the time spent on each web domain. It prints the time spent on each domain. For each domain, it prints the title of the web page on which the user spent the most time, and the amount of time spent. 
