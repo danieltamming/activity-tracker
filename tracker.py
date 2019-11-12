@@ -10,11 +10,12 @@ import lz4.block
 from glob import glob
 
 class Tracker():
-    def __init__(self, tilde_path='/data/@home/dltammin', 
-                 data_filename='data.json', record_filename='record.json'):
+    def __init__(self):
+        tilde_path = os.path.expanduser('~/')
         firefox_filename = glob(tilde_path+'/.mozilla/firefox/*default/'
                                 'sessionstore-backups/recovery.json*')[0]
-        assert os.path.exists(firefox_filename), 'Firefox file not found.'
+        assert os.path.exists(firefox_filename), ('Firefox file not found.'
+            ' See README.md for more information.')
         self.firefox_filename = firefox_filename
         todays_folder = os.path.join('data', str(date.today()))
         if not os.path.exists(todays_folder):
@@ -33,23 +34,28 @@ class Tracker():
             self._save(self.record_filename, {})
 
     def _close_entry(self, old_entry_dict, cur_time):
-        old_path = old_entry_dict['path']
+        old_title = old_entry_dict['title']
         start_time_str = old_entry_dict['time']
         start_time = datetime.strptime(start_time_str, self.time_format)
         delta = str(cur_time - start_time)
         print('Page {} closed, was first opened at {}, opened' 
-              ' for {}'.format(old_path, start_time_str, delta))
+              ' for {}\n'.format(old_title, start_time_str, delta))
 
         record_domains_dict = self._get_saved(self.record_filename)
         domain = old_entry_dict['domain']
         path = old_entry_dict['path']
         record_paths_dict, domain_time_intervals = record_domains_dict[domain]
-        assert domain_time_intervals[-1][-1] is None, '1Closing closed domain'
-        domain_time_intervals[-1][-1] = str(cur_time)
 
         record_entry_dict, path_time_intervals = record_paths_dict[path]
-        assert path_time_intervals[-1][-1] is None, '2 Closing closed domain'
+        assert path_time_intervals[-1][-1] is None, 'Closing closed path'
         path_time_intervals[-1][-1] = str(cur_time)
+
+        if all(path_time_intervals[-1][-1] is not None for
+                _, path_time_intervals in record_paths_dict.values()):
+            # all domains paths are closed, therefore close the domain
+            assert domain_time_intervals[-1][-1] is None, \
+                    'Closing closed domain'
+            domain_time_intervals[-1][-1] = str(cur_time)
 
         record_paths_dict[path] = (record_entry_dict, path_time_intervals)
         record_domains_dict[domain] = (record_paths_dict, 
@@ -57,8 +63,8 @@ class Tracker():
         self._save(self.record_filename, record_domains_dict)
 
     def _open_entry(self, new_entry_dict, cur_time):
-        new_path = new_entry_dict['path']
-        print('Page {} opened at {}'.format(new_path, cur_time))
+        new_title = new_entry_dict['title']
+        print('Page {} opened at {}\n'.format(new_title, cur_time))
 
         record_domains_dict = self._get_saved(self.record_filename)
         domain = new_entry_dict['domain']
@@ -198,6 +204,8 @@ class Tracker():
 
 agent = Tracker()
 agent.run()
+
+
 
 # with open('delete.json', 'w') as f:
 #     json.dump(agent.serialize(), f)
