@@ -33,19 +33,19 @@ def process_paths_dict(paths_dict):
 			max_entry_dict = entry_dict
 	return max_entry_dict, max_time_spent
 
-# CONSTANTS
-todays_folder = os.path.join('data', str(date.today()))
-record_filename = os.path.join(todays_folder, 'record.json')
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 CUR_TIME = datetime.now().replace(microsecond=0)
 ZERO_TIME = CUR_TIME - CUR_TIME
+
+todays_folder = os.path.join('data', str(date.today()))
+record_filename = os.path.join(todays_folder, 'record.json')
 
 with open(record_filename) as f:
 	domains_dict = json.load(f)
 
 labels = []
 times = []
-
+interval_counts = []
 for domain, (paths_dict, domain_time_intervals) in domains_dict.items():
 	time_spent = process_intervals(domain_time_intervals)
 	print('Spent {} on {}.'.format(time_spent, domain))
@@ -54,6 +54,11 @@ for domain, (paths_dict, domain_time_intervals) in domains_dict.items():
 		  '\n'.format(max_time_spent, max_entry_dict['title']))
 	labels.append(domain)
 	times.append(time_spent.total_seconds())
-
+	interval_counts.append(sum([len(intervals) for _, intervals 
+								in paths_dict.values()]))
 plt.pie(times, labels=labels)
+plt.title('Time Spent')
+plt.show()
+plt.pie(interval_counts, labels=labels)
+plt.title('Number of Pages Visited')
 plt.show()

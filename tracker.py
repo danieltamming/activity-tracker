@@ -23,6 +23,7 @@ class Tracker():
         self.data_filename = os.path.join(todays_folder, 'data.json')
         self.record_filename = os.path.join(todays_folder, 'record.json')
         self.time_format = '%Y-%m-%d %H:%M:%S'
+        self.delay_time = 1
 
         # TODO: smart comparison of previous run
         # Currently overwriting or accepting data from previous run
@@ -38,7 +39,7 @@ class Tracker():
         start_time_str = old_entry_dict['time']
         start_time = datetime.strptime(start_time_str, self.time_format)
         delta = str(cur_time - start_time)
-        print('Page {} closed, was first opened at {}, opened' 
+        print('Page \"{}\" closed, was first opened at {}, opened' 
               ' for {}\n'.format(old_title, start_time_str, delta))
 
         record_domains_dict = self._get_saved(self.record_filename)
@@ -64,7 +65,7 @@ class Tracker():
 
     def _open_entry(self, new_entry_dict, cur_time):
         new_title = new_entry_dict['title']
-        print('Page {} opened at {}\n'.format(new_title, cur_time))
+        print('Page \"{}\" opened at {}\n'.format(new_title, cur_time))
 
         record_domains_dict = self._get_saved(self.record_filename)
         domain = new_entry_dict['domain']
@@ -122,6 +123,9 @@ class Tracker():
         sites_dict = {}
         for window in firefox_data.get('windows'):
             for tab in window.get('tabs'):
+                if 'index' not in tab:
+                    # bug fix: some tab's entries are empty
+                    continue
                 page_dict = {}
                 idx = int(tab.get('index')) - 1
                 entry = tab.get('entries')[idx]
@@ -157,7 +161,7 @@ class Tracker():
         for old_domain, old_paths_dict in old_domains_dict.items():
             # domain closed
             if old_domain not in new_domains_dict:
-                print('Domain {} closed.'.format(old_domain))
+                print('Domain \"{}\" closed.'.format(old_domain))
                 for old_path, old_entry_dict in old_paths_dict.items():
                     self._close_entry(old_entry_dict, cur_time)
             else:
@@ -173,7 +177,7 @@ class Tracker():
         # check if new paths are opened
         for new_domain, new_paths_dict in new_domains_dict.items():
             if new_domain not in old_domains_dict:
-                print('Domain {} opened.'.format(new_domain))
+                print('Domain \"{}\" opened.'.format(new_domain))
                 updated_domains_dict[new_domain] = new_paths_dict
                 for new_path, new_entry_dict in new_paths_dict.items():
                     self._open_entry(new_entry_dict, cur_time)
@@ -194,8 +198,15 @@ class Tracker():
     def run(self):
         try:
             while True:
-                agent.update()
-                time.sleep(1)
+                if not os.path.exists(self.firefox_filename):
+                    count += 1
+                    if count > 2:
+                        sys.exit('Firefox file not found for more than {} '
+                                 'seconds.'.format(2*self.delay_time))
+                else:
+                    count = 0
+                    agent.update()
+                time.sleep(self.delay_time)
 
         except KeyboardInterrupt:
             # close all tab intervals
