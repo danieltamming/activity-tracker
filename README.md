@@ -20,9 +20,9 @@ pip install -r requirements.txt
 ### Website Time Use Metrics
 1. Time with website open in broswer. The downside of this metric is that it assigns high weights to websites that a user has open all day but does not use. For example, if one leaves a tab with their nytimes.com open all day (say, 8 hours), this website will be at least tied for the highest value of this metric *regardless of whether the user interacts with it*. Further, if one visits stackoverflow.com/ 10 times, closing the tab after 6 minutes each time, then by this metric stackoverflow will have 1/8 of the value of the nytimes page *that the user never actually used*.
 2. Time with website as active window. An improvement of 1 since it assumes the user is always *using* the active window, when in reality they could be away from their laptop.
-3. Number of times a webpage on the domain was opened, including duplicates. A better measure of *active usage* because it avoids the problem described in the previous points. 
+3. Number of times a webpage on the domain was opened, including duplicates. A better measure of *active usage* than 1 and 2 because a webpage is navigated to *if and only if* a user is interacting with it. One downside is that some websites are formatted in such a way that one needs to move between webpages more frequently in order to find the information they are looking for. For example, spending 10 minutes on Instragram.com may consist of scrolling through 1 webpage, while spending 10 minutes on stackoverflow.com may involve navigating to 10 different pages. 
 
-We will use metric 3.
+Since error due to the user leaving a webpage open for long periods of time will likely have more of a drastic distorting effect than the error described in point 3, we will use metric 3.
 
 ### Data Report
 The data storage was designed to be used in a wide variety of ways. Currently, it shows a a bar chart for both use metrics. It prints the time spent on each domain. For each domain, it prints the title of the web page on which the user spent the most time, and the amount of time spent. 
