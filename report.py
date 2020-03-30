@@ -6,7 +6,9 @@ import time
 from datetime import datetime, date, timedelta
 import json
 
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def process_intervals(time_intervals):
 	'''
@@ -40,6 +42,8 @@ ZERO_TIME = CUR_TIME - CUR_TIME
 todays_folder = os.path.join('data', str(date.today()))
 record_filename = os.path.join(todays_folder, 'record.json')
 
+# record_filename = 'data/2019-11-11/record.json'
+
 with open(record_filename) as f:
 	domains_dict = json.load(f)
 
@@ -56,9 +60,33 @@ for domain, (paths_dict, domain_time_intervals) in domains_dict.items():
 	times.append(time_spent.total_seconds())
 	interval_counts.append(sum([len(intervals) for _, intervals 
 								in paths_dict.values()]))
-plt.pie(times, labels=labels)
-plt.title('Time Spent')
+
+data = pd.DataFrame(list(zip(labels, times, interval_counts)),
+					columns=['Site', 'Time', 'Visits'])
+
+fig, ax = plt.subplots()
+sns.barplot(
+		x='Site', y='Visits', data=data.sort_values('Visits', ascending=False), ax=ax
+	).set(title='Number of Pages Opened on Site (Includes Duplicates)', 
+		  ylabel='Number of Pages')
+plt.xticks(
+    rotation=45, 
+    horizontalalignment='right',
+    # fontweight='light',
+    fontsize=8  
+)
+fig.subplots_adjust(bottom=0.2)
 plt.show()
-plt.pie(interval_counts, labels=labels)
-plt.title('Number of Pages Visited')
-plt.show()
+
+# fig, ax = plt.subplots()
+# sns.barplot(
+# 		x='Site', y='Time', data=data.sort_values('Time', ascending=False), ax=ax
+# 	).set(title='Time Spent', ylabel='Time (s)')
+# plt.xticks(
+#     rotation=45, 
+#     horizontalalignment='right',
+#     # fontweight='light',
+#     fontsize=8  
+# )
+# fig.subplots_adjust(bottom=0.2)
+# plt.show()
