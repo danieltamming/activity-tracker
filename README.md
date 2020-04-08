@@ -2,7 +2,7 @@
 
 ### To Install
 ```
-git clone https://github.com/danitamm/activity-tracker.git
+git clone https://github.com/danieltamming/activity-tracker.git
 cd activity-tracker
 virtualenv -p python3 env
 source env/bin/activate
